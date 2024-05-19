@@ -121,3 +121,96 @@
         path("books/", include("books.urls")),
     ]
     ```
+
+3. Community Book Recommendtions:
+    1. Create Models:
+
+        ```python
+        from django.db import models
+
+
+        # Create your models here.
+        class Recommendation(models.Model):
+            title = models.CharField(max_length=200)
+            author = models.CharField(max_length=200)
+            description = models.TextField()
+            cover_image = models.URLField()
+            rating = models.FloatField()
+            created_at = models.DateTimeField(auto_now_add=True)
+
+        ```
+
+    2. Create Serializers:
+
+        ```python
+        from rest_framework import serializers
+        from .models import Recommendation
+
+        class RecommendationSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Recommendation
+                fields = '__all__'
+        ```
+
+    3. Create views and URLs:
+
+        ```python
+        from django.shortcuts import render
+        from django.http import JsonResponse
+        from .services.utils import GoogleBooksClient  # The function we wrote earlier
+
+        from rest_framework import viewsets
+        from .models import BookRecommendation
+        from .serializers import RecommendationSerializer
+
+
+        # to get the GoogleAPIKey request--
+        def search(request):
+            query = request.GET.get('q', '')
+            results = GoogleBooksClient.search_books(query)
+            return JsonResponse(results)
+
+
+        # serialize the model data with the APIs
+        class RecommendationViewSet(viewsets.ModelViewSet):
+            queryset = BookRecommendation.objects.all()
+            serializer_class = RecommendationSerializer
+        ```
+        - urls:
+        ```python
+        from django.urls import path
+        from . import views
+
+        from rest_framework.routers import DefaultRouter
+
+
+        # define the router
+        router = DefaultRouter()
+        router.register(r'recommendations', views.RecommendationViewSet)
+
+
+        urlpatterns = [
+            path('search/', views.search, name='search'),
+        ] + router.urls
+        ```
+
+    4. Add REST framework to settings in myProject:
+
+        ```python
+        EXTERNAL_APPS = [
+        "books",
+        "rest_framework",
+        ]
+
+        INSTALLED_APPS+=EXTERNAL_APPS
+
+        -- Optionally, add REST framework settings
+        REST_FRAMEWORK = {
+            'DEFAULT_RENDERER_CLASSES': (
+                'rest_framework.renderers.JSONRenderer',
+            ),
+            'DEFAULT_PARSER_CLASSES': (
+                'rest_framework.parsers.JSONParser',
+            )
+        }
+        ```
