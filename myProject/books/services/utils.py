@@ -7,7 +7,7 @@ class GoogleBooksClient:
 
     @staticmethod
     def search_books(query):
-        query = "harry potter"
+        # query = "harry potter"
         params = {"q": query, "key": GoogleBooksClient.API_KEY}
         response = requests.get(GoogleBooksClient.url, params=params)
         return response.json()
