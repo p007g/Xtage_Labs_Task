@@ -15,6 +15,10 @@ def redirect_to_books(request):
 def index(request):
     return render(request, 'search_results.html')
 
+def handler404(request, exception):
+    return render(request, '404.html', status=404)
+
+
 # to get the GoogleAPIKey request--
 def search_books(request):
     query = request.GET.get('q', '')
