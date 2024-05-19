@@ -330,3 +330,15 @@
         </script>
     </body>
     </html>
+
+6. Running the Project:
+
+    1. make migrations to the code files : 
+    > python manage.py makemigrations
+    2. migrate all the models and templates : 
+    > python manage.py migrate
+    3. run the server on localhost url(http://127.0.0.1:8000/) : 
+    > python manage.py runserver
+
+
+## -----Success-----
